@@ -1,3 +1,10 @@
 <resources>
-    <string name="app_name">snakeGame</string>
+    <string name="app_name">Snake Game</string>
+    <string name="speed">Game Speed</string>
+    <string name="color">Snake Color</string>
+    <string name="start">Start Game</string>
+    <string name="swipe">Swipe Controls</string>
+    <string name="default_score">0</string>
+    <string name="last_score">Last Score: %d</string>
+    <string name="score">Score:</string>
 </resources>

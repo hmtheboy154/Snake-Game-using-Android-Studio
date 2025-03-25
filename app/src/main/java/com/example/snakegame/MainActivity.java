@@ -4,7 +4,9 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatImageButton;
+import androidx.appcompat.widget.SwitchCompat;
 
+import android.annotation.SuppressLint;
 import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -18,7 +20,6 @@ import android.view.View;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
-import android.widget.Switch;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -74,7 +75,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     private RelativeLayout menuLayout;
     private SeekBar speedSlider;
     private RadioGroup colorGroup;
-    private Switch swipeControlSwitch;
+    private SwitchCompat swipeControlSwitch;
     private TextView lastScoreTV;
 
     @Override
@@ -90,7 +91,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
 
         // Load last score
         int lastScore = prefs.getInt("lastScore", 0);
-        lastScoreTV.setText("Last Score: " + lastScore);
+        lastScoreTV.setText(getString(R.string.last_score, lastScore));
 
         findViewById(R.id.startButton).setOnClickListener(v -> {
             // Save settings
@@ -120,43 +121,31 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         surfaceView.getHolder().addCallback(this);
 
 
-        topBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        topBtn.setOnClickListener(view -> {
 
-                //check if previous moving position is not bottom.Snake cant move.
-                //for example if snake moving to bottom then snake cant directly start moving to top
-                //snake must take right or left first then top
-                if (!movingPosition.equals("bottom")) {
-                    movingPosition = "top";
-                }
+            //check if previous moving position is not bottom.Snake cant move.
+            //for example if snake moving to bottom then snake cant directly start moving to top
+            //snake must take right or left first then top
+            if (!movingPosition.equals("bottom")) {
+                movingPosition = "top";
             }
         });
 
-        leftBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(!movingPosition.equals("right")){
-                    movingPosition = "left";
-                }
+        leftBtn.setOnClickListener(view -> {
+            if(!movingPosition.equals("right")){
+                movingPosition = "left";
             }
         });
 
-        rightBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(!movingPosition.equals("left")) {
-                    movingPosition = "right";
-                }
+        rightBtn.setOnClickListener(view -> {
+            if(!movingPosition.equals("left")) {
+                movingPosition = "right";
             }
         });
 
-        bottomBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(!movingPosition.equals("top")) {
-                    movingPosition = "bottom";
-                }
+        bottomBtn.setOnClickListener(view -> {
+            if(!movingPosition.equals("top")) {
+                movingPosition = "bottom";
             }
         });
     }
@@ -240,7 +229,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     private void moveSnake(){
 
         timer = new Timer();
-        timer.scheduleAtFixedRate(new TimerTask() {
+        timer.schedule(new TimerTask() {
             @Override
             public void run() {
 
@@ -297,29 +286,23 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
                     timer.purge();
                     timer.cancel();
 
-                    //show game over dialog
+                    // Show game over dialog
                     AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                     builder.setMessage("Your Score = "+score);
                     builder.setTitle("Game Over");
                     builder.setCancelable(false);
-// In the game over dialog:
+                    // In the game over dialog:
                     builder.setPositiveButton("Start Again", (dialog, which) -> {
                         // Save score
                         prefs.edit().putInt("lastScore", score).apply();
 
                         // Show menu instead of direct restart
                         menuLayout.setVisibility(View.VISIBLE);
-                        lastScoreTV.setText("Last Score: " + score);
+                        lastScoreTV.setText(getString(R.string.last_score, score));
                     });
 
                     //timer runs in background so we need to show dialog on main thread
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-
-                            builder.show();
-                        }
-                    });
+                    runOnUiThread(builder::show);
                 }
                 else{
 
@@ -369,13 +352,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         score++;
 
         //setting score to TextViews
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-
-                scoreTV.setText(String.valueOf(score));
-            }
-        });
+        runOnUiThread(() -> scoreTV.setText(String.valueOf(score)));
     }
     private boolean checkGameOver(int headPositionX, int headPositionY){
         boolean gameOver = false;
@@ -455,6 +432,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     private float x1, y1;
     private static final int MIN_DISTANCE = 150;
 
+    @SuppressLint("ClickableViewAccessibility")
     private void setupSwipeControls() {
         surfaceView.setOnTouchListener((v, event) -> {
             switch(event.getAction()) {

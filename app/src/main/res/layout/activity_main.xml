@@ -83,7 +83,7 @@
         android:layout_marginEnd="137dp"
         android:layout_marginBottom="678dp"
         android:background="#F4F1EF"
-        android:text="0"
+        android:text="@string/default_score"
         android:textAlignment="center"
         android:textColor="#0C0808"
         android:textSize="25sp"
@@ -98,7 +98,7 @@
         android:layout_marginEnd="212dp"
         android:layout_marginBottom="679dp"
         android:background="#F8F2F2"
-        android:text="Score:"
+        android:text="@string/score"
         android:textColor="#191414"
         android:textSize="24sp" />
 
@@ -114,13 +114,13 @@
             android:layout_centerInParent="true"
             android:orientation="vertical"
             android:padding="16dp"
-            android:background="@android:color/white">
+            android:background="?android:attr/colorBackground">
 
             <!-- Header -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Snake Game"
+                android:text="@string/app_name"
                 android:textSize="24sp"
                 android:gravity="center"
                 android:textStyle="bold"/>
@@ -129,7 +129,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Game Speed"
+                android:text="@string/speed"
                 android:layout_marginTop="16dp"/>
 
             <SeekBar
@@ -143,7 +143,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Snake Color"
+                android:text="@string/color"
                 android:layout_marginTop="16dp"/>
 
             <RadioGroup
@@ -157,7 +157,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:drawableLeft="@drawable/yellow_square"
+                    android:drawableStart="@drawable/yellow_square"
                     android:checked="true"
                     android:gravity="center_vertical"
                     android:drawablePadding="8dp"/>
@@ -167,7 +167,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:drawableLeft="@drawable/red_square"
+                    android:drawableStart="@drawable/red_square"
                     android:gravity="center_vertical"
                     android:drawablePadding="8dp"/>
 
@@ -176,7 +176,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:drawableLeft="@drawable/cyan_square"
+                    android:drawableStart="@drawable/cyan_square"
                     android:gravity="center_vertical"
                     android:drawablePadding="8dp"/>
 
@@ -185,7 +185,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:drawableLeft="@drawable/green_square"
+                    android:drawableStart="@drawable/green_square"
                     android:gravity="center_vertical"
                     android:drawablePadding="8dp"/>
             </RadioGroup>
@@ -197,7 +197,7 @@
                 android:orientation="horizontal"
                 android:layout_marginTop="16dp">
 
-                <Switch
+                <androidx.appcompat.widget.SwitchCompat
                     android:id="@+id/swipeControlSwitch"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
@@ -205,7 +205,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Swipe Controls"
+                    android:text="@string/swipe"
                     android:layout_gravity="center_vertical"/>
             </LinearLayout>
 
@@ -214,7 +214,7 @@
                 android:id="@+id/lastScoreTV"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Last Score: 0"
+                android:text="@string/last_score"
                 android:gravity="center"
                 android:layout_marginTop="16dp"/>
 
@@ -223,7 +223,7 @@
                 android:id="@+id/startButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Start Game"
+                android:text="@string/start"
                 android:layout_marginTop="16dp"/>
         </LinearLayout>
     </RelativeLayout>
