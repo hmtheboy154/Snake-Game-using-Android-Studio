@@ -102,5 +102,130 @@
         android:textColor="#191414"
         android:textSize="24sp" />
 
+    <RelativeLayout
+        android:id="@+id/menuLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#CC000000">
+
+        <LinearLayout
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:background="@android:color/white">
+
+            <!-- Header -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Snake Game"
+                android:textSize="24sp"
+                android:gravity="center"
+                android:textStyle="bold"/>
+
+            <!-- Speed Slider -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Game Speed"
+                android:layout_marginTop="16dp"/>
+
+            <SeekBar
+                android:id="@+id/speedSlider"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:max="4"
+                android:progress="2"/>
+
+            <!-- Color Picker -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Snake Color"
+                android:layout_marginTop="16dp"/>
+
+            <RadioGroup
+                android:id="@+id/colorGroup"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/colorYellow"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:drawableLeft="@drawable/yellow_square"
+                    android:checked="true"
+                    android:gravity="center_vertical"
+                    android:drawablePadding="8dp"/>
+
+                <RadioButton
+                    android:id="@+id/colorRed"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:drawableLeft="@drawable/red_square"
+                    android:gravity="center_vertical"
+                    android:drawablePadding="8dp"/>
+
+                <RadioButton
+                    android:id="@+id/colorCyan"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:drawableLeft="@drawable/cyan_square"
+                    android:gravity="center_vertical"
+                    android:drawablePadding="8dp"/>
+
+                <RadioButton
+                    android:id="@+id/colorGreen"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:drawableLeft="@drawable/green_square"
+                    android:gravity="center_vertical"
+                    android:drawablePadding="8dp"/>
+            </RadioGroup>
+
+            <!-- Swipe Control Switch -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="16dp">
+
+                <Switch
+                    android:id="@+id/swipeControlSwitch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Swipe Controls"
+                    android:layout_gravity="center_vertical"/>
+            </LinearLayout>
+
+            <!-- Last Score -->
+            <TextView
+                android:id="@+id/lastScoreTV"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Last Score: 0"
+                android:gravity="center"
+                android:layout_marginTop="16dp"/>
+
+            <!-- Start Button -->
+            <Button
+                android:id="@+id/startButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Start Game"
+                android:layout_marginTop="16dp"/>
+        </LinearLayout>
+    </RelativeLayout>
 
 </RelativeLayout>

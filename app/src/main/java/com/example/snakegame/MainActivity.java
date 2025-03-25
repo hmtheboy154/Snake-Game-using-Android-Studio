@@ -5,15 +5,20 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatImageButton;
 
-import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
+import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
+import android.widget.SeekBar;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -48,10 +53,10 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     private static final int defaultTalePoints = 3;
 
     //snake color
-    private static final int snakeColor = Color.YELLOW;
+    private int snakeColor = Color.YELLOW;
 
     //snake moving speed. value must lie between 1 to 1000
-    private static final int snakeMovingSpeed = 600;
+    private static int snakeMovingSpeed = 600;
 
     //random point position coordinates on the surfaceView
     private int positionX, positionY;
@@ -65,10 +70,41 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     //point color  / single point color of a snake
     private Paint pointColor = null;
 
+    private SharedPreferences prefs;
+    private RelativeLayout menuLayout;
+    private SeekBar speedSlider;
+    private RadioGroup colorGroup;
+    private Switch swipeControlSwitch;
+    private TextView lastScoreTV;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        prefs = getSharedPreferences("SnakePrefs", MODE_PRIVATE);
+        menuLayout = findViewById(R.id.menuLayout);
+        speedSlider = findViewById(R.id.speedSlider);
+        colorGroup = findViewById(R.id.colorGroup);
+        swipeControlSwitch = findViewById(R.id.swipeControlSwitch);
+        lastScoreTV = findViewById(R.id.lastScoreTV);
+
+        // Load last score
+        int lastScore = prefs.getInt("lastScore", 0);
+        lastScoreTV.setText("Last Score: " + lastScore);
+
+        findViewById(R.id.startButton).setOnClickListener(v -> {
+            // Save settings
+            int speedLevel = speedSlider.getProgress();
+            int selectedColorId = colorGroup.getCheckedRadioButtonId();
+            boolean swipeControls = swipeControlSwitch.isChecked();
+
+            // Apply settings
+            applyGameSettings(speedLevel, selectedColorId, swipeControls);
+
+            // Hide menu and start game
+            menuLayout.setVisibility(View.GONE);
+            init();
+        });
 
         //getting surfaceView and scoreTextView from xml file
         surfaceView = findViewById(R.id.surfaceView);
@@ -127,13 +163,8 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
 
     @Override
     public void surfaceCreated(@NonNull SurfaceHolder surfaceHolder) {
-
-        //when surface is created then get surfaceHolder from it and assign to surfaceHolder
         this.surfaceHolder = surfaceHolder;
-
-        //init data for snake / surfaceView
-        init();
-
+        menuLayout.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -147,7 +178,6 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     }
 
     private void init(){
-
         //clear snake points/ snake length
         snakePointsList.clear();
 
@@ -176,6 +206,9 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
 
         //add random point on the screen to be eaten by the snake
         addPoint();
+
+        //apply color settings.
+        createPointColor();
 
         //start moving snake / start game
         moveSnake();
@@ -269,13 +302,14 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
                     builder.setMessage("Your Score = "+score);
                     builder.setTitle("Game Over");
                     builder.setCancelable(false);
-                    builder.setPositiveButton("Start Again", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
+// In the game over dialog:
+                    builder.setPositiveButton("Start Again", (dialog, which) -> {
+                        // Save score
+                        prefs.edit().putInt("lastScore", score).apply();
 
-                            //restart game / re-init data
-                            init();
-                        }
+                        // Show menu instead of direct restart
+                        menuLayout.setVisibility(View.VISIBLE);
+                        lastScoreTV.setText("Last Score: " + score);
                     });
 
                     //timer runs in background so we need to show dialog on main thread
@@ -375,13 +409,86 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
 
         //check if color not defined before
         if(pointColor == null){
-
             pointColor = new Paint();
             pointColor.setColor(snakeColor);
             pointColor.setStyle(Paint.Style.FILL);
             pointColor.setAntiAlias(true); //smoothness
-
+        } else {
+            // Update the color of the existing Paint object
+            pointColor.setColor(snakeColor);
         }
         return pointColor;
+    }
+
+    private void applyGameSettings(int speedLevel, int colorId, boolean swipeControls) {
+        // Convert speed level (0-4) to actual speed
+        snakeMovingSpeed = 200 + (speedLevel * 150);
+
+        // Set snake color based on selection
+        if (colorId == R.id.colorRed) {
+            snakeColor = Color.RED;
+        } else if (colorId == R.id.colorYellow) {
+            snakeColor = Color.YELLOW;
+        } else if (colorId == R.id.colorGreen) {
+            snakeColor = Color.GREEN;
+        } else if (colorId == R.id.colorCyan) {
+            snakeColor = Color.CYAN;
+        }
+
+        // Handle swipe controls
+        if(swipeControls) {
+            setupSwipeControls();
+            // Hide button controls
+            findViewById(R.id.topBtn).setVisibility(View.GONE);
+            findViewById(R.id.bottomBtn).setVisibility(View.GONE);
+            findViewById(R.id.leftBtn).setVisibility(View.GONE);
+            findViewById(R.id.rightBtn).setVisibility(View.GONE);
+        } else {
+            // Show button controls
+            findViewById(R.id.topBtn).setVisibility(View.VISIBLE);
+            findViewById(R.id.bottomBtn).setVisibility(View.VISIBLE);
+            findViewById(R.id.leftBtn).setVisibility(View.VISIBLE);
+            findViewById(R.id.rightBtn).setVisibility(View.VISIBLE);
+        }
+    }
+
+    private float x1, y1;
+    private static final int MIN_DISTANCE = 150;
+
+    private void setupSwipeControls() {
+        surfaceView.setOnTouchListener((v, event) -> {
+            switch(event.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    x1 = event.getX();
+                    y1 = event.getY();
+                    break;
+                case MotionEvent.ACTION_UP:
+                    float x2 = event.getX();
+                    float y2 = event.getY();
+
+                    float deltaX = x2 - x1;
+                    float deltaY = y2 - y1;
+
+                    if(Math.abs(deltaX) > MIN_DISTANCE || Math.abs(deltaY) > MIN_DISTANCE) {
+                        if(Math.abs(deltaX) > Math.abs(deltaY)) {
+                            // Horizontal swipe
+                            if(deltaX > 0) {
+                                if(!movingPosition.equals("left")) movingPosition = "right";
+                            } else {
+                                if(!movingPosition.equals("right")) movingPosition = "left";
+                            }
+                        } else {
+                            // Vertical swipe
+                            if(deltaY > 0) {
+                                if(!movingPosition.equals("top")) movingPosition = "bottom";
+                            } else {
+                                if(!movingPosition.equals("bottom")) movingPosition = "top";
+                            }
+                        }
+                    }
+                    break;
+            }
+            return true;
+        });
     }
 }
