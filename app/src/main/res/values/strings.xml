@@ -4,6 +4,7 @@
     <string name="color">Snake Color</string>
     <string name="start">Start Game</string>
     <string name="swipe">Swipe Controls</string>
+    <string name="keyboard">Use keyboard control if connected (control using arrow keys or WASD)</string>
     <string name="default_score">0</string>
     <string name="last_score">Last Score: %d</string>
     <string name="score">Score:</string>

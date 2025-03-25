@@ -13,6 +13,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -76,6 +77,8 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     private SeekBar speedSlider;
     private RadioGroup colorGroup;
     private SwitchCompat swipeControlSwitch;
+    private SwitchCompat keyboardControlSwitch;
+    private boolean useKeyboardControl = false;
     private TextView lastScoreTV;
 
     @Override
@@ -87,6 +90,9 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         speedSlider = findViewById(R.id.speedSlider);
         colorGroup = findViewById(R.id.colorGroup);
         swipeControlSwitch = findViewById(R.id.swipeControlSwitch);
+        keyboardControlSwitch = findViewById(R.id.keyboardControlSwitch);
+        useKeyboardControl = prefs.getBoolean("useKeyboardControl", false);
+        keyboardControlSwitch.setChecked(useKeyboardControl);
         lastScoreTV = findViewById(R.id.lastScoreTV);
 
         // Load last score
@@ -427,6 +433,10 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
             findViewById(R.id.leftBtn).setVisibility(View.VISIBLE);
             findViewById(R.id.rightBtn).setVisibility(View.VISIBLE);
         }
+
+        // Handle keyboard controls
+        useKeyboardControl = keyboardControlSwitch.isChecked();
+        prefs.edit().putBoolean("useKeyboardControl", useKeyboardControl).apply();
     }
 
     private float x1, y1;
@@ -468,5 +478,41 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
             }
             return true;
         });
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (useKeyboardControl) {
+            switch (keyCode) {
+                case KeyEvent.KEYCODE_DPAD_UP:
+                case KeyEvent.KEYCODE_W:
+                    if (!movingPosition.equals("bottom")) {
+                        movingPosition = "top";
+                    }
+                    return true;
+                case KeyEvent.KEYCODE_DPAD_DOWN:
+                case KeyEvent.KEYCODE_S:
+                    if (!movingPosition.equals("top")) {
+                        movingPosition = "bottom";
+                    }
+                    return true;
+                case KeyEvent.KEYCODE_DPAD_LEFT:
+                case KeyEvent.KEYCODE_A:
+                    if (!movingPosition.equals("right")) {
+                        movingPosition = "left";
+                    }
+                    return true;
+                case KeyEvent.KEYCODE_DPAD_RIGHT:
+                case KeyEvent.KEYCODE_D:
+                    if (!movingPosition.equals("left")) {
+                        movingPosition = "right";
+                    }
+                    return true;
+                default:
+                    return super.onKeyDown(keyCode, event);
+            }
+        } else {
+            return super.onKeyDown(keyCode, event);
+        }
     }
 }
